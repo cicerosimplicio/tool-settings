@@ -1,10 +1,11 @@
 # fetch ----------------------------------------------------------------------------------------------------------------
 function GitFetchOrigin {
     # Obtém a branch.
-    $branch = $(Invoke-PsFzfGitBranches)
+    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Fetch branch"
 
     if (-not $branch) {
         Write-Host "Fetch em toda a origem." -ForegroundColor Blue
+
         # Se nenhuma branch for selecionada, faz um fetch de tudo.
         git fetch origin
     }
@@ -34,7 +35,7 @@ function GitPush {
 
 function GitPushOriginDelete {
     # Obtém a branch.
-    $branch = $(git branch --remotes | fzf --exact --prompt "Selecione a branch: ")
+    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Delete remote branch"
 
     if (-not $branch) {
         Write-Host "Branch não selecionada." -ForegroundColor Red
@@ -51,7 +52,7 @@ function GitPushForce {
 
 function GitPushOriginSetUpstream {
     # Obtém a branch.
-    $branch = $(Invoke-PsFzfGitBranches)
+    $branch = git branch --format="%(refname:short)" | fzf --exact --border-label "Push branch to remote"
 
     if (-not $branch) {
         Write-Host "Branch não selecionada." -ForegroundColor Red
@@ -85,10 +86,10 @@ function GitDiff {
 
 function GitDiffFile {
     # Obtém o arquivo.
-    $file = $(Invoke-PsFzfGitFiles)
+    $file = git diff --name-only | fzf --exact --border-label "Diff file"
     
     if (-not $file) {
-        Write-Host "Arquivo não selecionada." -ForegroundColor Red
+        Write-Host "Arquivo não selecionado." -ForegroundColor Red
         return
     }
 
@@ -98,7 +99,7 @@ function GitDiffFile {
 
 function GitDiffHash {
     # Obtém o hash.
-    $hash = $(Invoke-PsFzfGitHashes)
+    $hash = Invoke-PsFzfGitHashes
     
     if (-not $hash) {
         Write-Host "Hash não selecionado." -ForegroundColor Red
@@ -110,31 +111,31 @@ function GitDiffHash {
 }
 
 function GitDiffBranchFile {
-    # Obtenha a primeira branch.
-    $branch1 = git branch --all --list --format="%(refname:short)" | fzf -e --prompt "Selecione a primeira branch: "
+    # Obtém a primeira branch.
+    $branch1 = git branch --all --list --format="%(refname:short)" | fzf --exact --border-label "Branch 1"
 
     if (-not $branch1) {
         Write-Host "Branch 1 não selecionada." -ForegroundColor Red
         return
     }
 
-    # Obtenha a segunda branch
-    $branch2 = git branch --all --list --format="%(refname:short)" | fzf -e --prompt "Selecione a segunda branch: "
+    # Obtém a segunda branch.
+    $branch2 = git branch --all --list --format="%(refname:short)" | fzf --exact --border-label "Branch 2"
 
     if (-not $branch2) {
         Write-Host "Branch 2 não selecionada." -ForegroundColor Red
         return
     }
 
-    # Obtenha o arquivo a ser comparado
-    $file = git ls-tree -r --name-only $branch1 | fzf -e --prompt "Selecione o arquivo: "
+    # Obtém o arquivo a ser comparado.
+    $file = git ls-tree -r --name-only $branch1 | fzf --exact --border-label "Arquivo para comparação"
 
     if (-not $file) {
-        Write-Host "Nenhum arquivo selecionado." -ForegroundColor Red
+        Write-Host "Arquivo não selecionado." -ForegroundColor Red
         return
     }
 
-    # Exibir a diferença entre os dois arquivos
+    # Exibe a diferença entre os dois arquivos.
     git diff "$branch1`:$file" "$branch2`:$file"
 }
 
@@ -352,52 +353,124 @@ function GitBranches {
 }
 
 function GitBranchRemotes {
-    git branch --remotes --format="%(refname:short)"
+    # Exibe as branches remotas.
+    git branch --remotes --format="%(refname:short)" | fzf --header "Remote branches"
 }
 
 function GitBranchAll {
-    git branch --all --format="%(refname:short)"
+    # Exibe todas as branchs.
+    git branch --all --format="%(refname:short)" | fzf --header "All branches"
 }
 
 function GitBranchMove {
-    param($inputString) git branch --move --force $(Invoke-PsFzfGitBranches) "$inputString"
+    param (
+        $novoNome
+    )
+
+    # Obtém a branch local.
+    $branch = git branch --format="%(refname:short)" | fzf --header "Local branches"
+
+    if (-not $branch) {
+        Write-Host "Branch não selecionada." -ForegroundColor Red
+        return
+    }
+
+    # Altera o nome da branch.
+    git branch --move --force $branch $novoNome
 }
 
 function GitBranchDelete {
-    git branch --delete --force $(Invoke-PsFzfGitBranches)
+    # Obtém a branch local.
+    $branch = git branch --format="%(refname:short)" | fzf --header "Local branches"
+
+    if (-not $branch) {
+        Write-Host "Branch não selecionada." -ForegroundColor Red
+        return
+    }
+    # Remove uma branch local.
+
+    git branch --delete --force $branch
 }
 
 function GitBranchContains {
-    git branch --contains
+    # Obtém o hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash não selecionado." -ForegroundColor Red
+        return
+    }
+
+    # Retorna as branches local que contém o hash.
+    git branch --contains $hash
 }
 
 function GitBranchContainsRemotes {
+    # Obtém o hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash não selecionado." -ForegroundColor Red
+        return
+    }
+
+    # Retorna as branches remotas que contém o hash.
     git branch --contains --remotes
 }
 
 function GitBranchContainsAll {
+    # Obtém o hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash não selecionado." -ForegroundColor Red
+        return
+    }
+
+    # Retorna todas as branches que contém o hash.
     git branch --contains --all
 }
 
 function GitBranchSetUpstream {
+    # Associa a branch local a remota.
     git branch --set-upstream $(git branch --remotes --format="%(refname:short)" | fzf -e)
 }
 
 function GitBranchUnsetUpsteam {
+    # Desassocia a branch local do remoto.
     git branch --unset-upstream
 }
 
 function GitBranchVerbose {
+    # Verifica o rastreamento.
     git branch -vv
 }
 
 # rebase ---------------------------------------------------------------------------------------------------------------
 function GitRebase {
-    git rebase $(Invoke-PsFzfGitBranches)
+    # Obtém a branch.
+    $branch = Invoke-PsFzfGitBranches
+
+    if (-not $branch) {
+        Write-Host "Branch não selecionada." -ForegroundColor Red
+        return
+    }
+
+    # Atualiza a branch local sem perder os commits atuais.
+    git rebase $branch
 }
 
 function GitRebaseInteractive {
-    git rebase --interactive $(Invoke-PsFzfGitHashes)
+    # Obtém o hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash não selecionado." -ForegroundColor Red
+        return
+    }
+
+    # Permite editar o histórico a partir do hash.
+    git rebase --interactive $hash
 }
 
 # commit ---------------------------------------------------------------------------------------------------------------
@@ -406,14 +479,21 @@ function GitHashes {
 }
 
 function GitCommitMessage {
-    param($inputString) git commit --message "$inputString"
+    param (
+        $message
+    )
+    
+    # Cria um commit.
+    git commit --message "$message"
 }
 
 function GitCommitAmend {
+    # Edita o último commit, permitindo alterar a mensagem.
     git commit --amend
 }
 
 function GitCommitAmendNoEdit {
+    # Edita o último commit, mantendo a mensagem anterior.
     git commit --amend --no-edit
 }
 
