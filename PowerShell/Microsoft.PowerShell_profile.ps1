@@ -114,7 +114,7 @@ Set-Alias -Name grao -Value GitRemoteAddOrigin
 # stash
 Set-Alias -Name gsts -Value GitStashSave
 Set-Alias -Name gstl -Value GitStashList
-Set-Alias -Name gsts -Value GitStashShow
+Set-Alias -Name gstsh -Value GitStashShow
 Set-Alias -Name gstshno -Value GitStashShowNameOnly
 Set-Alias -Name gstshns -Value GitStashShowNameStatus
 Set-Alias -Name gsta -Value GitStashApply
@@ -190,3 +190,8 @@ function dvp { docker volume prune }
 # compose
 function dcw { docker compose watch }
 function dcs { docker compose stop }
+# databases
+# postgres
+function drpg { docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres }
+# mssql
+function drms { docker run --rm --name mssql-server -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1q2w3e4r@#$" -d -p 1433:1433 -v $HOME/docker/volumes/mssql:/var/opt/mssql/data mcr.microsoft.com/mssql/server }

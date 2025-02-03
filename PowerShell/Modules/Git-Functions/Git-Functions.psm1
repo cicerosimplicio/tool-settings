@@ -67,7 +67,6 @@ function GitPushOriginSetUpstream {
 }
 
 # log ------------------------------------------------------------------------------------------------------------------
-
 function GitLogOneline {
     git log --oneline
 }
@@ -81,12 +80,17 @@ function GitLogOnelineGraphDecoreteAll {
 }
 
 # diff -----------------------------------------------------------------------------------------------------------------
-# Displays the current differences.
+# Displays the current unstaged differences.
 function GitDiff {
     git diff
 }
 
-# Displays file differences.
+# Displays the current staged differences.
+function GitDiffStaged {
+    git diff --staged
+}
+
+# Displays unstaged differences in a file.
 function GitDiffFile {
     # Gets the file.
     $file = git diff --name-only | fzf --exact --border-label "Diff file"
@@ -97,6 +101,19 @@ function GitDiffFile {
     }
 
     git diff $file
+}
+
+# Displays staged differences in a file.
+function GitDiffFileStaged {
+    # Gets the file.
+    $file = git diff --name-only | fzf --exact --border-label "Diff file"
+    
+    if (-not $file) {
+        Write-Host "File not selected." -ForegroundColor Red
+        return
+    }
+
+    git diff --staged $file
 }
 
 # Displays commit differences.
@@ -216,6 +233,19 @@ function GitShowBranchNameOnly {
     git show --name-only $branch
 }
 
+# Displays changes from a stash.
+function GitShowStash {
+    # Gets the stash.
+    $stash = Invoke-PsFzfGitStashes
+
+    if (-not $stash) {
+        Write-Host "Stash not selected." -ForegroundColor Red
+        return
+    }
+
+    git show $stash
+}
+
 # Displays changes from a stash file.
 function GitShowStashFile {
     # Gets the stash.
@@ -227,7 +257,7 @@ function GitShowStashFile {
     }
 
     # Gets the name of changed files from the stash.
-    $files = git show --name-only --oneline $stash | Select-Object -Skip 2
+    $files = git stash show --name-only $stash
 
     # Gets the file.
     $selectedFile = $files | fzf --exact --border-label "Show file"
@@ -251,7 +281,7 @@ function GitShowStashFileContent {
     }
 
     # Gets the name of changed files from the stash.
-    $files = git show --name-only --oneline $stash | Select-Object -Skip 2
+    $files = git stash show --name-only $stash
 
     # Gets the file.
     $selectedFile = $files | fzf --exact --border-label "Show file content"
@@ -275,7 +305,7 @@ function GitShowBranchFile {
     }
 
     # Gets the name of changed files from the branch.
-    $files = git show --name-only --oneline $branch | Select-Object -Skip 1
+    $files = git show --name-only --pretty="" $branch
 
     # Gets the file.
     $selectedFile = $files | fzf --exact --border-label "Show file"
@@ -310,6 +340,19 @@ function GitShowBranchFileContent {
     }
 
     git show "$branch`:$selectedFile"
+}
+
+# Displays changes from a hash.
+function GitShowHash {
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash not selected." -ForegroundColor Red
+        return
+    }
+
+    git show $hash
 }
 # switch ---------------------------------------------------------------------------------------------------------------
 # Creates a local branch.
@@ -471,6 +514,7 @@ function GitRebase {
     git rebase $branch
 }
 
+# Allows editing the history from a hash.
 function GitRebaseInteractive {
     # Gets the hash.
     $hash = Invoke-PsFzfGitHashes
@@ -480,7 +524,6 @@ function GitRebaseInteractive {
         return
     }
 
-    # Permite editar o histórico a partir do hash.
     git rebase --interactive $hash
 }
 
@@ -489,80 +532,179 @@ function GitHashes {
     Invoke-PsFzfGitHashes
 }
 
+# Creates a commit with a message.
 function GitCommitMessage {
     param (
         $message
     )
     
-    # Cria um commit.
     git commit --message "$message"
 }
 
+# Edits the last commit, allowing the message to be changed.
 function GitCommitAmend {
-    # Edita o último commit, permitindo alterar a mensagem.
     git commit --amend
 }
 
+# Edits the last commit, keeping the previous message.
 function GitCommitAmendNoEdit {
-    # Edita o último commit, mantendo a mensagem anterior.
     git commit --amend --no-edit
 }
 
 # remote ---------------------------------------------------------------------------------------------------------------
+# Adds a remote repository to the project.
 function GitRemoteAddOrigin {
-    param($inputString) git remote add origin "$inputString"
+    param (
+        $remoteUrl
+    )
+
+    git remote add origin $remoteUrl
 }
 
 # stash ----------------------------------------------------------------------------------------------------------------
+# Creates a stash.
 function GitStashSave {
-    param($inputString) git stash save "$inputString"
+    param (
+        $stashName
+    )
+    
+    git stash save $stashName
 }
 
+# Lists all stashes.
 function GitStashList {
     Invoke-PsFzfGitStashes
 }
 
-function GitStashShow {
-    git stash show $(Invoke-PsFzfGitStashes)
-}
-
+# Displays filenames from a stash.
 function GitStashShowNameOnly {
+    # Gets the stash.
+    $stash = Invoke-PsFzfGitStashes
+
+    if (-not $stash) {
+        Write-Host "Stash not selected." -ForegroundColor Red
+        return
+    }
+
     git stash show --name-only $(Invoke-PsFzfGitStashes)
 }
 
+# Displays status and filenames from a stash.
 function GitStashShowNameStatus {
+    # Gets the stash.
+    $stash = Invoke-PsFzfGitStashes
+
+    if (-not $stash) {
+        Write-Host "Stash not selected." -ForegroundColor Red
+        return
+    }
+
     git stash show --name-status $(Invoke-PsFzfGitStashes)
 }
 
+# Applies a stash.
 function GitStashApply {
-    git stash apply $(Invoke-PsFzfGitStashes)
+    # Gets the stash.
+    $stash = Invoke-PsFzfGitStashes
+
+    if (-not $stash) {
+        Write-Host "Stash not selected." -ForegroundColor Red
+        return
+    }
+
+    git stash apply $stash
 }
 
+# Applies and remove a stash.
 function GitStashPop {
-    git stash pop $(Invoke-PsFzfGitStashes)
+    # Gets the stash.
+    $stash = Invoke-PsFzfGitStashes
+
+    if (-not $stash) {
+        Write-Host "Stash not selected." -ForegroundColor Red
+        return
+    }
+
+    git stash pop $stash
 }
 
 # cherry-pick ----------------------------------------------------------------------------------------------------------
+# Includes in the history the commit from another branch.
 function GitCherryPick {
-    git cherry-pick $(Invoke-PsFzfGitHashes)
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Host "Hash not selected." -ForegroundColor Red
+        return
+    }
+    
+    git cherry-pick $hash
 }
 
 # restore --------------------------------------------------------------------------------------------------------------
+# Restores unstaged files.
 function GitRestore {
-    git restore $(Invoke-PsFzfGitFiles)
+    # Gets the files.
+    $files = Invoke-PsFzfGitFiles
+
+    if (-not $files) {
+        Write-Host "Files not selected." -ForegroundColor Red
+    }
+
+    git restore $files
+}
+
+# Restore staged files.
+function GitRestoreStaged {
+    # Gets the files.
+    $files = Invoke-PsFzfGitFiles
+
+    if (-not $files) {
+        Write-Host "Files not selected." -ForegroundColor Red
+    }
+
+    git restore --staged $files
 }
 
 # reset ----------------------------------------------------------------------------------------------------------------
+# Removes commits and all file changes.
 function GitResetHard {
-    git reset --hard $(Invoke-PsFzfGitHashes)
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitStashes
+
+    if (-not $hash) {
+        Write-Host "Hash not selected." -ForegroundColor Red
+        return
+    }
+
+    git reset --hard $hash
 }
 
+# Removes commits, but keeps all file changes in the staged area.
 function GitResetSoft {
-    git reset --soft $(Invoke-PsFzfGitHashes)
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitStashes
+
+    if (-not $hash) {
+        Write-Host "Hash not selected." -ForegroundColor Red
+        return
+    }
+
+    git reset --soft $hash
 }
 
+# Removes commits, but keeps all file changes in the unstaged area.
 function GitResetMixed {
-    git reset --mixed $(Invoke-PsFzfGitHashes)
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitStashes
+
+    if (-not $hash) {
+        Write-Host "Hash not selected." -ForegroundColor Red
+        return
+    }
+
+    git reset --mixed $hash
 }
 
 # file -----------------------------------------------------------------------------------------------------------------
@@ -571,6 +713,98 @@ function GitFiles {
 }
 
 # add ------------------------------------------------------------------------------------------------------------------
+# Adds files to the staged area.
 function GitAdd {
-    git add $(Invoke-PsFzfGitFiles)
+    # Gets the files.
+    $files = Invoke-PsFzfGitFiles
+
+    if (-not $files) {
+        Write-Host "Files not selected." -ForegroundColor Red
+    }
+
+    git add $files
 }
+
+# fetch
+Set-Alias -Name gfo -Value GitFetchOrigin
+# status
+Set-Alias -Name gs -Value GitStatus
+Set-Alias -Name gss -Value GitStatusShort
+# pull
+Set-Alias -Name gpl -Value GitPull
+# push
+Set-Alias -Name gpsh -Value GitPush
+Set-Alias -Name gpsod -Value GitPushOriginDelete
+Set-Alias -Name gpsf -Value GitPushForce
+Set-Alias -Name gpssu -Value GitPushOriginSetUpstream
+# log
+Set-Alias -Name glo -Value GitLogOneline
+Set-Alias -Name gloda -Value GitLogOnelineDecorateAll
+Set-Alias -Name glogda -Value GitLogOnelineGraphDecoreteAll
+# diff
+Set-Alias -Name gd -Value GitDiff
+Set-Alias -Name gds -Value GitDiffStaged
+Set-Alias -Name gdf -Value GitDiffFile
+Set-Alias -Name gdfs -Value GitDiffFileStaged
+Set-Alias -Name gdbf -Value GitDiffBranchFile
+Set-Alias -Name gdh -Value GitDiffHash
+Set-Alias -Name gdb -Value GitDiffBranches
+# show
+Set-Alias -Name gsh -Value GitShow
+Set-Alias -Name gshns -Value GitShowNameStatus
+Set-Alias -Name gshno -Value GitShowNameOnly
+Set-Alias -Name gshb -Value GitShowBranch
+Set-Alias -Name gshbf -Value GitShowBranchFile
+Set-Alias -Name gshbfc -Value GitShowBranchFileContent
+Set-Alias -Name gshbns -Value GitShowBranchNameStatus
+Set-Alias -Name gshbno -Value GitShowBranchNameOnly
+Set-Alias -Name gshh -Value GitShowHash
+Set-Alias -Name gshst -Value GitShowStash
+Set-Alias -Name gshstf -Value GitShowStashFile
+Set-Alias -Name gshstfc -Value GitShowStashFileContent
+# switch
+Set-Alias -Name gswc -Value GitSwitchCreate
+Set-Alias -Name gsw -Value GitSwitch
+Set-Alias -Name gswt -Value GitSwitchTrack
+# branch
+Set-Alias -Name gb -Value GitBranches
+Set-Alias -Name gbr -Value GitBranchRemotes
+Set-Alias -Name gba -Value GitBranchAll
+Set-Alias -Name gbm -Value GitBranchMove
+Set-Alias -Name gbd -Value GitBranchDelete
+Set-Alias -Name gbc -Value GitBranchContains
+Set-Alias -Name gbcr -Value GitBranchContainsRemotes
+Set-Alias -Name gbca -Value GitBranchContainsAll
+Set-Alias -Name gbsu -Value GitBranchSetUpstream
+Set-Alias -Name gbuu -Value GitBranchUnsetUpsteam
+Set-Alias -Name gbv -Value GitBranchVerbose
+# rebase
+Set-Alias -Name grb -Value GitRebase
+Set-Alias -Name grbi -Value GitRebaseInteractive
+# commit
+Set-Alias -Name ghs -Value GitHashes
+Set-Alias -Name gcc -Value GitCommitMessage
+Set-Alias -Name gca -Value GitCommitAmend
+Set-Alias -Name gcan -Value GitCommitAmendNoEdit
+# remote
+Set-Alias -Name grao -Value GitRemoteAddOrigin
+# stash
+Set-Alias -Name gsts -Value GitStashSave
+Set-Alias -Name gstl -Value GitStashList
+Set-Alias -Name gstshno -Value GitStashShowNameOnly
+Set-Alias -Name gstshns -Value GitStashShowNameStatus
+Set-Alias -Name gsta -Value GitStashApply
+Set-Alias -Name gstp -Value GitStashPop
+# cherry-pick
+Set-Alias -Name gcp -Value GitCherryPick
+# restore
+Set-Alias -Name gr -Value GitRestore
+Set-Alias -Name grs -Value GitRestoreStaged
+# reset
+Set-Alias -Name grh -Value GitResetHard
+Set-Alias -Name grs -Value GitResetSoft
+Set-Alias -Name grm -Value GitResetMixed
+# file
+Set-Alias -Name gf -Value GitFiles
+# add
+Set-Alias -Name ga -Value GitAdd
