@@ -1,11 +1,11 @@
 # fetch ----------------------------------------------------------------------------------------------------------------
 # Fetches updates from a remote branch.
 function GitFetchOrigin {
-    # Gets the local branch.
-    $branch = git branch --format="%(refname:short)" | fzf --exact --border-label "Fetch branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Fetch from all remote branches." -ForegroundColor Blue
+        Write-Error 'Fetch from all remote branches.' -ForegroundColor Blue
 
         # If no branch is selected, fetch from all remote branches.
         git fetch origin
@@ -37,11 +37,11 @@ function GitPush {
 
 # Delete a remote branch.
 function GitPushOriginDelete {
-    # Gets the remote branch.
-    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Delete branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -55,11 +55,11 @@ function GitPushForce {
 
 # Pushes a local branch to the remote repository.
 function GitPushOriginSetUpstream {
-    # Gets the local branch.
-    $branch = git branch --format="%(refname:short)" | fzf --exact --border-label "Push branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -96,7 +96,7 @@ function GitDiffFile {
     $file = Invoke-PsFzfGitFiles
     
     if (-not $file) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -109,7 +109,7 @@ function GitDiffStagedFile {
     $file = Invoke-PsFzfGitFiles
     
     if (-not $file) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -122,7 +122,7 @@ function GitDiffHash {
     $hash = Invoke-PsFzfGitHashes
     
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -132,26 +132,26 @@ function GitDiffHash {
 # Displays differences between two files in different branches.
 function GitDiffBranchFile {
     # Gets the first branch.
-    $branch1 = git branch --all --format="%(refname:short)" | fzf --exact --border-label "First branch"
+    $branch1 = git branch --all --format='%(refname:short)' | fzf --exact --border-label 'First branch'
 
     if (-not $branch1) {
-        Write-Error "The first branch was not selected."
+        Write-Error 'The first branch was not selected.'
         return
     }
 
     # Gets the second branch.
-    $branch2 = git branch --all --format="%(refname:short)" | fzf --exact --border-label "Second branch"
+    $branch2 = git branch --all --format='%(refname:short)' | fzf --exact --border-label 'Second branch'
 
     if (-not $branch2) {
-        Write-Error "The second branch was not selected."
+        Write-Error 'The second branch was not selected.'
         return
     }
 
     # Gets the file to be compared.
-    $file = git ls-tree -r --name-only $branch1 | fzf --exact --border-label "Diff file"
+    $file = git ls-tree -r --name-only $branch1 | fzf --exact --border-label 'Diff file'
 
     if (-not $file) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -161,18 +161,18 @@ function GitDiffBranchFile {
 # Displays differences between two branches.
 function GitDiffBranches {
     # Gets the first branch.
-    $branch1 = git branch --all --list --format="%(refname:short)" | fzf --exact --border-label "First branch"
+    $branch1 = git branch --all --list --format='%(refname:short)' | fzf --exact --border-label 'First branch'
 
     if (-not $branch1) {
-        Write-Error "The first branch was not selected."
+        Write-Error 'The first branch was not selected.'
         return
     }
 
     # Gets the second branch.
-    $branch2 = git branch --all --list --format="%(refname:short)" | fzf --exact --border-label "Second branch"
+    $branch2 = git branch --all --list --format='%(refname:short)' | fzf --exact --border-label 'Second branch'
 
     if (-not $branch2) {
-        Write-Error "The second branch was not selected."
+        Write-Error 'The second branch was not selected.'
         return
     }
 
@@ -200,7 +200,7 @@ function GitShowBranch {
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -213,7 +213,7 @@ function GitShowBranchNameStatus {
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -226,7 +226,7 @@ function GitShowBranchNameOnly {
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -239,7 +239,7 @@ function GitShowStash {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -252,7 +252,7 @@ function GitShowStashFile {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -260,10 +260,10 @@ function GitShowStashFile {
     $files = git stash show --name-only $stash
 
     # Gets the file.
-    $selectedFile = $files | fzf --exact --border-label "Show file"
+    $selectedFile = $files | fzf --exact --border-label 'Show file'
 
     if (-not $selectedFile) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -276,7 +276,7 @@ function GitShowStashFileContent {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -284,10 +284,10 @@ function GitShowStashFileContent {
     $files = git stash show --name-only $stash
 
     # Gets the file.
-    $selectedFile = $files | fzf --exact --border-label "Show file content"
+    $selectedFile = $files | fzf --exact --border-label 'Show file content'
 
     if (-not $selectedFile) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -300,18 +300,18 @@ function GitShowBranchFile {
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
     # Gets the name of changed files from the branch.
-    $files = git show --name-only --pretty="" $branch
+    $files = git show --name-only --pretty='' $branch
 
     # Gets the file.
-    $selectedFile = $files | fzf --exact --border-label "Show file"
+    $selectedFile = $files | fzf --exact --border-label 'Show file'
     
     if (-not $selectedFile) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -324,7 +324,7 @@ function GitShowBranchFileContent {
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -332,10 +332,10 @@ function GitShowBranchFileContent {
     $files = git ls-tree -r --name-only $branch
 
     # Gets the file.
-    $selectedFile = $files | fzf --exact --border-label "Show file content"
+    $selectedFile = $files | fzf --exact --border-label 'Show file content'
 
     if (-not $selectedFile) {
-        Write-Error "File not selected."
+        Write-Error 'File not selected.'
         return
     }
 
@@ -348,7 +348,7 @@ function GitShowHash {
     $hash = Invoke-PsFzfGitHashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -362,7 +362,7 @@ function GitSwitchCreate {
     )
 
     if (-not $branchName) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -371,11 +371,11 @@ function GitSwitchCreate {
 
 # Switches to a local branch.
 function GitSwitch {
-    # Gets the local branch.
+    # Gets the branch.
     $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -384,11 +384,11 @@ function GitSwitch {
 
 # Creates and tracks a local branch.
 function GitSwitchTrack {
-    # Gets the remote branch.
-    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Create and track branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -400,27 +400,17 @@ function GitBranches {
     Invoke-PsFzfGitBranches
 }
 
-# Displays all remote branches.
-function GitBranchRemotes {
-    git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Remote branches"
-}
-
-# Displays all local branches.
-function GitBranchAll {
-    git branch --all --format="%(refname:short)" | fzf --exact --border-label "All branches"
-}
-
 # Changes the name of a local branch.
 function GitBranchMove {
     param (
         $newName
     )
 
-    # Gets the local branch.
-    $branch = git branch --format="%(refname:short)" | fzf --exact --border-label "Move branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -429,50 +419,24 @@ function GitBranchMove {
 
 # Remove a local branch.
 function GitBranchDelete {
-    # Gets the local branch.
-    $branch = git branch --format="%(refname:short)" | fzf --exact --border-label "Delete branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
     git branch --delete --force $branch
 }
 
-# Returns the local branches that contain a hash.
-function GitBranchContains {
-    # Gets the hash.
-    $hash = Invoke-PsFzfGitHashes
-
-    if (-not $hash) {
-        Write-Error "Hash not selected."
-        return
-    }
-
-    git branch --contains $hash
-}
-
-# Returns the remote branches that contain a hash.
-function GitBranchContainsRemotes {
-    # Gets the hash.
-    $hash = Invoke-PsFzfGitHashes
-
-    if (-not $hash) {
-        Write-Error "Hash not selected."
-        return
-    }
-
-    git branch --contains --remotes $hash
-}
-
 # Returns all branches that contain a hash.
-function GitBranchContainsAll {
+function GitBranchAllContains {
     # Gets the hash.
     $hash = Invoke-PsFzfGitHashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -481,11 +445,11 @@ function GitBranchContainsAll {
 
 # Associates the local branch with a remote branch.
 function GitBranchSetUpstream {
-    # Gets the remote branch.
-    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Set-upstream branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -505,11 +469,11 @@ function GitBranchVerbose {
 # rebase ---------------------------------------------------------------------------------------------------------------
 # Updates the local branch based on a remote branch.
 function GitRebase {
-    # Gets the remote branch.
-    $branch = git branch --remotes --format="%(refname:short)" | fzf --exact --border-label "Rebase branch"
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
     if (-not $branch) {
-        Write-Error "Branch not selected."
+        Write-Error 'Branch not selected.'
         return
     }
 
@@ -522,7 +486,7 @@ function GitRebaseInteractive {
     $hash = Invoke-PsFzfGitHashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -584,7 +548,7 @@ function GitStashShowNameOnly {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -597,7 +561,7 @@ function GitStashShowNameStatus {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -610,7 +574,7 @@ function GitStashApply {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -623,7 +587,7 @@ function GitStashPop {
     $stash = Invoke-PsFzfGitStashes
 
     if (-not $stash) {
-        Write-Error "Stash not selected."
+        Write-Error 'Stash not selected.'
         return
     }
 
@@ -637,7 +601,7 @@ function GitCherryPick {
     $hash = Invoke-PsFzfGitHashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
     
@@ -651,7 +615,7 @@ function GitRestore {
     $files = Invoke-PsFzfGitFiles
 
     if (-not $files) {
-        Write-Error "Files not selected."
+        Write-Error 'Files not selected.'
     }
 
     git restore $files
@@ -663,7 +627,7 @@ function GitRestoreStaged {
     $files = Invoke-PsFzfGitFiles
 
     if (-not $files) {
-        Write-Error "Files not selected."
+        Write-Error 'Files not selected.'
     }
 
     git restore --staged $files
@@ -676,7 +640,7 @@ function GitResetHard {
     $hash = Invoke-PsFzfGitStashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -689,7 +653,7 @@ function GitResetSoft {
     $hash = Invoke-PsFzfGitStashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -702,7 +666,7 @@ function GitResetMixed {
     $hash = Invoke-PsFzfGitStashes
 
     if (-not $hash) {
-        Write-Error "Hash not selected."
+        Write-Error 'Hash not selected.'
         return
     }
 
@@ -714,17 +678,17 @@ function GitFiles {
     Invoke-PsFzfGitFiles
 }
 
-# add ------------------------------------------------------------------------------------------------------------------
-# Adds files to the staged area.
-function GitAdd {
-    # Gets the files.
-    $files = Invoke-PsFzfGitFiles
+# Discard local commits and reset branch to match remote.
+function GitResetHardBranch {
+    # Gets the branch.
+    $branch = Invoke-PsFzfGitBranches
 
-    if (-not $files) {
-        Write-Error "Files not selected."
+    if (-not $branch) {
+        Write-Error 'Branch not selected.'
+        return
     }
 
-    git add $files
+    git reset --hard $branch
 }
 
 # fetch
@@ -738,7 +702,7 @@ Set-Alias -Name gpl -Value GitPull
 Set-Alias -Name gpsh -Value GitPush
 Set-Alias -Name gpsod -Value GitPushOriginDelete
 Set-Alias -Name gpsf -Value GitPushForce
-Set-Alias -Name gpssu -Value GitPushOriginSetUpstream
+Set-Alias -Name gpsosu -Value GitPushOriginSetUpstream
 # log
 Set-Alias -Name glo -Value GitLogOneline
 Set-Alias -Name gloda -Value GitLogOnelineDecorateAll
@@ -758,8 +722,8 @@ Set-Alias -Name gshno -Value GitShowNameOnly
 Set-Alias -Name gshb -Value GitShowBranch
 Set-Alias -Name gshbf -Value GitShowBranchFile
 Set-Alias -Name gshbfc -Value GitShowBranchFileContent
-Set-Alias -Name gshbns -Value GitShowBranchNameStatus
-Set-Alias -Name gshbno -Value GitShowBranchNameOnly
+Set-Alias -Name gshnsb -Value GitShowBranchNameStatus
+Set-Alias -Name gshnob -Value GitShowBranchNameOnly
 Set-Alias -Name gshh -Value GitShowHash
 Set-Alias -Name gshst -Value GitShowStash
 Set-Alias -Name gshstf -Value GitShowStashFile
@@ -770,13 +734,9 @@ Set-Alias -Name gsw -Value GitSwitch
 Set-Alias -Name gswt -Value GitSwitchTrack
 # branch
 Set-Alias -Name gb -Value GitBranches
-Set-Alias -Name gbr -Value GitBranchRemotes
-Set-Alias -Name gba -Value GitBranchAll
 Set-Alias -Name gbm -Value GitBranchMove
 Set-Alias -Name gbd -Value GitBranchDelete
-Set-Alias -Name gbc -Value GitBranchContains
-Set-Alias -Name gbcr -Value GitBranchContainsRemotes
-Set-Alias -Name gbca -Value GitBranchContainsAll
+Set-Alias -Name gbca -Value GitBranchAllContains
 Set-Alias -Name gbsu -Value GitBranchSetUpstream
 Set-Alias -Name gbuu -Value GitBranchUnsetUpsteam
 Set-Alias -Name gbv -Value GitBranchVerbose
@@ -785,7 +745,7 @@ Set-Alias -Name grb -Value GitRebase
 Set-Alias -Name grbi -Value GitRebaseInteractive
 # commit
 Set-Alias -Name ghs -Value GitHashes
-Set-Alias -Name gcc -Value GitCommitMessage
+Set-Alias -Name gcmm -Value GitCommitMessage
 Set-Alias -Name gca -Value GitCommitAmend
 Set-Alias -Name gcan -Value GitCommitAmendNoEdit
 # remote
@@ -808,5 +768,3 @@ Set-Alias -Name grs -Value GitResetSoft
 Set-Alias -Name grm -Value GitResetMixed
 # file
 Set-Alias -Name gf -Value GitFiles
-# add
-Set-Alias -Name ga -Value GitAdd
