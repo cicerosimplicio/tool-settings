@@ -354,6 +354,30 @@ function GitShowHash {
 
     git show $hash
 }
+
+# Displays changes from a file's hash.
+function GitShowHashFile {
+    # Gets the hash.
+    $hash = Invoke-PsFzfGitHashes
+
+    if (-not $hash) {
+        Write-Error 'Hash not selected.'
+        return
+    }
+
+    # Gets all changed files from the hash.
+    $files = git show --name-only --pretty='' $hash
+    
+    # Gets the file.
+    $selectedFile = $files | fzf --exact --border-label 'Show file changes'
+
+    if (-not $selectedFile) {
+        Write-Error 'File not selected.'
+        return
+    }
+
+    git show $hash $selectedFile
+}
 # switch ---------------------------------------------------------------------------------------------------------------
 # Creates a local branch.
 function GitSwitchCreate {
@@ -725,6 +749,7 @@ Set-Alias -Name gshbfc -Value GitShowBranchFileContent
 Set-Alias -Name gshnsb -Value GitShowBranchNameStatus
 Set-Alias -Name gshnob -Value GitShowBranchNameOnly
 Set-Alias -Name gshh -Value GitShowHash
+Set-Alias -Name gshh -Value GitShowHashFile
 Set-Alias -Name gshst -Value GitShowStash
 Set-Alias -Name gshstf -Value GitShowStashFile
 Set-Alias -Name gshstfc -Value GitShowStashFileContent

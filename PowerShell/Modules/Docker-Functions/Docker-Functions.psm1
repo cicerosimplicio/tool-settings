@@ -1,5 +1,5 @@
 # build
-function dbbt {
+function DockerBuildxBuildTag {
     param (
         $tag
     )
@@ -7,11 +7,11 @@ function dbbt {
     docker buildx build --tag $tag .
 }
 # image
-function dil {
+function DockerImageList {
     docker image ls
 }
 
-function dir {
+function DockerImageRemove {
     param (
         $image
     )
@@ -19,19 +19,19 @@ function dir {
     docker image rm $image
 }
 
-function dira {
+function DockerImageRemoveAll {
     docker image rm $(docker image ls -q)
 }
 
-function dip {
+function DockerImagePrune {
     docker image prune
 }
 # container
-function dcl {
+function DockerContainerList {
     docker container ls
 }
 
-function dcr {
+function DockerContainerRemove {
     param (
         $container
     )
@@ -39,15 +39,15 @@ function dcr {
     docker container rm $container
 }
 
-function dcra {
+function DockerContainerRemoveAll {
     docker container rm $(docker container ls -q)
 }
 
-function dcp {
+function DockerContainerPrune {
     docker container prune
 }
 
-function dcsc {
+function DockerContainerStop {
     param (
         $container
     )
@@ -55,11 +55,11 @@ function dcsc {
     docker container stop $container
 }
 
-function dcsa {
+function DockerContainerStopAll {
     docker container stop $(docker container ls -q)
 }
-
-function dcrdp {
+# run
+function DockerContainerRunDetachPublish {
     param (
         $port,
         $image
@@ -68,7 +68,7 @@ function dcrdp {
     docker container run --rm --detach --publish $port $image
 }
 
-function dcrit {
+function DockerContainerRunInteractiveTty {
     param (
         $image
     )
@@ -76,7 +76,7 @@ function dcrit {
     docker container run --rm --interactive --tty $image /bin/sh
 }
 
-function dcrnd {
+function DockerContainerRunNameDetatch {
     param (
         $name,
         $image
@@ -85,7 +85,7 @@ function dcrnd {
     docker container run --rm --name $name --detach $image
 }
 
-function dcrndv {
+function DockerContainerRunNameDetatchVolume {
     param (
         $name,
         $source,
@@ -95,8 +95,8 @@ function dcrndv {
 
     docker container run --rm --name $name --detach --volume "$source`:$target" $image
 }
-
-function dcec {
+# exec
+function DockerContainerExec {
     param (
         $name,
         $command
@@ -105,7 +105,7 @@ function dcec {
     docker container exec $name sh -c $command
 }
 
-function dceit {
+function DockerContainerExecInteractiveTty {
     param (
         $name
     )
@@ -114,28 +114,60 @@ function dceit {
 }
 
 # volume
-function dvl {
+function DockerVolumeList {
     docker volume ls
 }
 
-function dvp {
+function DockerVolumePrune {
     docker volume prune
 }
 
 # compose
-function dcw {
+function DockerComposeWatch {
     docker compose watch
 }
 
-function dcs {
+function DockerComposeStop {
     docker compose stop
 }
 # databases
 # postgres
-function drpg {
+function drpg DockerRunPostgres {
     docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
 }
 # mssql
-function drms {
+function DockerRunMsSql {
     docker run --rm --name mssql-docker -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1q2w3e4r@#$" -d -p 1433:1433 -v $HOME/docker/volumes/mssql:/var/opt/mssql/data mcr.microsoft.com/mssql/server
 }
+
+# build
+Set-Alias -Name dbbt -Value DockerBuildxBuildTag
+# image
+Set-Alias -Name dil -Value DockerImageList
+Set-Alias -Name dirr -Value DockerImageRemove
+Set-Alias -Name dira -Value DockerImageRemoveAll
+Set-Alias -Name dip -Value DockerImagePrune
+# container
+Set-Alias -Name dcl -Value DockerContainerList
+Set-Alias -Name dcr -Value DockerContainerRemove
+Set-Alias -Name dcra -Value DockerContainerRemoveAll
+Set-Alias -Name dcs -Value DockerContainerStop
+Set-Alias -Name dcsa -Value DockerContainerStopAll
+Set-Alias -Name dcp -Value DockerContainerPrune
+# run
+Set-Alias -Name dcrnd -Value DockerContainerRunNameDetatch
+Set-Alias -Name dcrndv -Value DockerContainerRunNameDetatchVolume
+Set-Alias -Name dcrdp -Value DockerContainerRunDetachPublish
+Set-Alias -Name dcrit -Value DockerContainerRunInteractiveTty
+# exec
+Set-Alias -Name dce -Value DockerContainerExec
+Set-Alias -Name dceit -Value DockerContainerExecInteractiveTty
+# volume
+Set-Alias -Name dvl -Value DockerVolumeList
+Set-Alias -Name dvp -Value DockerVolumePrune
+# compose
+Set-Alias -Name dcpw -Value DockerComposeWatch
+Set-Alias -Name dcps -Value DockerComposeStop
+# database
+Set-Alias -Name drpg -Value DockerRunPostgres
+Set-Alias -Name drms -Value DockerRunMsSql
