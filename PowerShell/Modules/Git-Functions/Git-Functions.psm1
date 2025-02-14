@@ -54,7 +54,7 @@ function GitPushForce {
 }
 
 # Pushes a local branch to the remote repository.
-function GitPushOriginSetUpstream {
+function GitPushSetUpstreamOrigin {
     # Gets the branch.
     $branch = Invoke-PsFzfGitBranches
 
@@ -726,7 +726,7 @@ Set-Alias -Name gpl -Value GitPull
 Set-Alias -Name gpsh -Value GitPush
 Set-Alias -Name gpsod -Value GitPushOriginDelete
 Set-Alias -Name gpsf -Value GitPushForce
-Set-Alias -Name gpsosu -Value GitPushOriginSetUpstream
+Set-Alias -Name gpssuo -Value GitPushSetUpstreamOrigin
 # log
 Set-Alias -Name glo -Value GitLogOneline
 Set-Alias -Name gloda -Value GitLogOnelineDecorateAll

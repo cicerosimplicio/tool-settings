@@ -1,10 +1,10 @@
 # build
-function DockerBuildxBuildTag {
+function DockerBuildTag {
     param (
         $tag
     )
 
-    docker buildx build --tag $tag .
+    docker build --tag $tag .
 }
 # image
 function DockerImageList {
@@ -59,33 +59,33 @@ function DockerContainerStopAll {
     docker container stop $(docker container ls -q)
 }
 # run
-function DockerContainerRunDetachPublish {
+function DockerRunDetachPublish {
     param (
         $port,
         $image
     )
 
-    docker container run --rm --detach --publish $port $image
+    docker run --rm --detach --publish $port $image
 }
 
-function DockerContainerRunInteractiveTty {
+function DockerRunInteractiveTty {
     param (
         $image
     )
 
-    docker container run --rm --interactive --tty $image /bin/sh
+    docker run --rm --interactive --tty $image /bin/sh
 }
 
-function DockerContainerRunNameDetatch {
+function DockerRunNameDetatch {
     param (
         $name,
         $image
     )
 
-    docker container run --rm --name $name --detach $image
+    docker run --rm --name $name --detach $image
 }
 
-function DockerContainerRunNameDetatchVolume {
+function DockerRunNameDetatchVolume {
     param (
         $name,
         $source,
@@ -93,24 +93,24 @@ function DockerContainerRunNameDetatchVolume {
         $image
     )
 
-    docker container run --rm --name $name --detach --volume "$source`:$target" $image
+    docker run --rm --name $name --detach --volume "$source`:$target" $image
 }
 # exec
-function DockerContainerExec {
+function DockerExec {
     param (
         $name,
         $command
     )
 
-    docker container exec $name sh -c $command
+    docker exec $name sh -c $command
 }
 
-function DockerContainerExecInteractiveTty {
+function DockerExecInteractiveTty {
     param (
         $name
     )
 
-    docker container exec --interactive --tty $name /bin/sh
+    docker exec --interactive --tty $name /bin/sh
 }
 
 # volume
@@ -132,7 +132,7 @@ function DockerComposeStop {
 }
 # databases
 # postgres
-function drpg DockerRunPostgres {
+function DockerRunPostgres {
     docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
 }
 # mssql
@@ -141,7 +141,7 @@ function DockerRunMsSql {
 }
 
 # build
-Set-Alias -Name dbbt -Value DockerBuildxBuildTag
+Set-Alias -Name dbt -Value DockerBuildTag
 # image
 Set-Alias -Name dil -Value DockerImageList
 Set-Alias -Name dirr -Value DockerImageRemove
@@ -155,19 +155,19 @@ Set-Alias -Name dcs -Value DockerContainerStop
 Set-Alias -Name dcsa -Value DockerContainerStopAll
 Set-Alias -Name dcp -Value DockerContainerPrune
 # run
-Set-Alias -Name dcrnd -Value DockerContainerRunNameDetatch
-Set-Alias -Name dcrndv -Value DockerContainerRunNameDetatchVolume
-Set-Alias -Name dcrdp -Value DockerContainerRunDetachPublish
-Set-Alias -Name dcrit -Value DockerContainerRunInteractiveTty
+Set-Alias -Name drnd -Value DockerRunNameDetatch
+Set-Alias -Name drndv -Value DockerRunNameDetatchVolume
+Set-Alias -Name drdp -Value DockerRunDetachPublish
+Set-Alias -Name drit -Value DockerRunInteractiveTty
 # exec
-Set-Alias -Name dce -Value DockerContainerExec
-Set-Alias -Name dceit -Value DockerContainerExecInteractiveTty
+Set-Alias -Name de -Value DockerExec
+Set-Alias -Name deit -Value DockerExecInteractiveTty
 # volume
 Set-Alias -Name dvl -Value DockerVolumeList
 Set-Alias -Name dvp -Value DockerVolumePrune
 # compose
-Set-Alias -Name dcpw -Value DockerComposeWatch
-Set-Alias -Name dcps -Value DockerComposeStop
+Set-Alias -Name dcw -Value DockerComposeWatch
+Set-Alias -Name dcs -Value DockerComposeStop
 # database
 Set-Alias -Name drpg -Value DockerRunPostgres
 Set-Alias -Name drms -Value DockerRunMsSql
