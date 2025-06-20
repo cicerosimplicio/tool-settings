@@ -786,7 +786,7 @@ Set-Alias -Name gstp -Value GitStashPop
 Set-Alias -Name gcp -Value GitCherryPick
 # restore
 Set-Alias -Name gr -Value GitRestore
-Set-Alias -Name grs -Value GitRestoreStaged
+Set-Alias -Name grst -Value GitRestoreStaged
 # reset
 Set-Alias -Name grh -Value GitResetHard
 Set-Alias -Name grs -Value GitResetSoft

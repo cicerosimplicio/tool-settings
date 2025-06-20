@@ -40,6 +40,7 @@ source "$ZDOTDIR/scripts.zsh"
 source "$ZDOTDIR/bindings.zsh"
 
 # Functions
+source "$ZDOTDIR/essential-functions.zsh"
 source "$ZDOTDIR/git-functions.zsh"
 
 # Aliases

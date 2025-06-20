@@ -8,6 +8,10 @@ alias grep='rg'
 # Substitute cat
 alias cat='bat'
 
+# Essential functions
+alias sf='save_file'
+alias af='append_file'
+
 # Git
 # fetch
 alias gfo='git_fetch_origin'
@@ -43,6 +47,7 @@ alias gshbfc='git_show_branch_file_content'
 alias gshnsb='git_show_name_status_branch'
 alias gshnob='git_show_name_only_branch'
 alias gshh='git_show_hash'
+alias gshhf='git_show_hash_file'
 alias gshst='git_show_stash'
 alias gshstf='git_show_stash_file'
 alias gshstfc='git_show_stash_file_content'

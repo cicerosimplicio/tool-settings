@@ -17,6 +17,9 @@ export SAVEHIST=10000			# Maximum events in history file
 # Assigning a key binding to the visual vim mode
 export VI_MODE_ESC_INSERT="jk"
 
+# ASDF config
+export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
+
 # Setting fd as the default source for fzf
 export FZF_DEFAULT_COMMAND="fd --hidden --strip-cwd-prefix --exclude .git"
 

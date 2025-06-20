@@ -133,11 +133,11 @@ function DockerComposeStop {
 # databases
 # postgres
 function DockerRunPostgres {
-    docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/docker/volumes/postgres:/var/lib/postgresql/data postgres
+    docker run --rm --name pg-docker -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v pg-vol:/var/lib/postgresql/data postgres
 }
 # mssql
 function DockerRunMsSql {
-    docker run --rm --name mssql-docker -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1q2w3e4r@#$" -d -p 1433:1433 -v $HOME/docker/volumes/mssql:/var/opt/mssql/data mcr.microsoft.com/mssql/server
+    docker run --rm --name mssql-docker -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=1q2w3e4r@#$" -d -p 1433:1433 -v mssql-vol:/var/opt/mssql/data mcr.microsoft.com/mssql/server
 }
 
 # build
